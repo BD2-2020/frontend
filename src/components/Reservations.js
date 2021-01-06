@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import CardItem from "./cards/CardItem";
 import Topbar from "./Topbar";
 import SectionHeader from "./typo/SectionHeader";
+import Button from "@material-ui/core/Button";
 
 const backgroundShape = require("../images/shape.svg");
 
@@ -43,12 +44,15 @@ class Reservations extends Component {
               container
               className={classes.grid}
             >
-              <Grid item xs={12}>
                 <SectionHeader
                   title="Rezerwacje"
                   subtitle="Lista wszystkich złożonych rezerwacji"
                 />
+              <Grid item xs={10}>
                 <CardItem name="Fiat Punto" comfort="3/5" />
+              </Grid>
+              <Grid item xs={2}>
+                <Button> Anuluj </Button>
               </Grid>
             </Grid>
           </Grid>
