@@ -20,6 +20,10 @@ const Menu = [
     pathname: "/wizard"
   },
   {
+    label: "Dodaj pracownika",
+    pathname: "/add_employee"
+  },
+  {
     label: "Ustawienia",
     pathname: "/cards"
   }

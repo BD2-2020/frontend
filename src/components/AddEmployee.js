@@ -10,6 +10,10 @@ import Avatar from '@material-ui/core/Avatar';
 import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Container from '@material-ui/core/Container';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const backgroundShape = require("../images/shape.svg");
 
@@ -89,7 +93,7 @@ const styles = theme => ({
   }
 });
 
-class Wizard extends Component {
+class AddEmployee extends Component {
 
   render() {
     const { classes } = this.props;
@@ -119,7 +123,7 @@ class Wizard extends Component {
                         <LockOutlinedIcon />
                       </Avatar>
                       <Typography component="h1" variant="h5">
-                        Zarejestruj się
+                        Dodaj pracownika
                       </Typography>
                       <form className={classes.form} noValidate>
                         <TextField
@@ -144,6 +148,17 @@ class Wizard extends Component {
                           id="password"
                           autoComplete="current-password"
                         />
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="role">Uprawnienia</InputLabel>
+                            <Select
+                                labelId="role"
+                                id="role-select"
+                                //onChange={handleChange}
+                            >
+                                <MenuItem value={"admin"}>Administrator</MenuItem>
+                                <MenuItem value={"employee"}>Pracownik</MenuItem>
+                            </Select>
+                            </FormControl>
                         <TextField
                           variant="outlined"
                           margin="normal"
@@ -169,8 +184,15 @@ class Wizard extends Component {
                           variant="outlined"
                           margin="normal"
                           fullWidth
-                          label="Numer prawa jazdy"
-                          name="license_no"
+                          label="Pensja"
+                          name="salary"
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Numer konta"
+                          name="account_no"
                         />
                         <TextField
                           variant="outlined"
@@ -222,4 +244,4 @@ class Wizard extends Component {
   }
 }
 
-export default withRouter(withStyles(styles)(Wizard));
+export default withRouter(withStyles(styles)(AddEmployee));
