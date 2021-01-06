@@ -7,10 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import SimpleLineChart from "./SimpleLineChart";
-import Months from "./common/Months";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
+//import Months from "./common/Months";
 import MenuItem from "@material-ui/core/MenuItem";
 import CardItem from "./cards/CardItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -116,7 +113,7 @@ const styles = theme => ({
   }
 });
 
-const monthRange = Months;
+//const monthRange = Months;
 
 class Reservation extends Component {
   state = {

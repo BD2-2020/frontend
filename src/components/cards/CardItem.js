@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import withStyles from '@material-ui/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Avatar from '@material-ui/core/Avatar';
-import DescriptionIcon from '@material-ui/icons/Description';
 
 const punto = require("../../images/punto.jpg")
 
@@ -83,7 +81,7 @@ class CardItem extends Component {
         <Paper className={classes.paper}>
           <div className={classes.itemContainer}>
             <div className={classes.avatarContainer}>
-                <img src={punto} className={classes.avatar}></img>
+                <img src={punto} className={classes.avatar} alt=''></img>
             </div>
             <div className={classes.baseline}>
               <div className={classes.inline} style={{ width: '30%' }}>
