@@ -12,6 +12,10 @@ const Menu = [
     pathname: "/reservations"
   },
   {
+    label: "Wypożyczone",
+    pathname: "/rentals"
+  },
+  {
     label: "Zaloguj się",
     pathname: "/signup"
   },
@@ -22,6 +26,10 @@ const Menu = [
   {
     label: "Dodaj pracownika",
     pathname: "/add_employee"
+  },
+  {
+    label: "Dodaj samochód",
+    pathname: "/add_car"
   },
   {
     label: "Ustawienia",

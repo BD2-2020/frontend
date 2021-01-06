@@ -26,7 +26,7 @@ const styles = theme => ({
   }
 });
 
-class Reservations extends Component {
+class Rentals extends Component {
   render() {
     const { classes } = this.props;
     const currentPath = this.props.location.pathname;
@@ -46,16 +46,13 @@ class Reservations extends Component {
             >
                 <SectionHeader
                   title="Rezerwacje"
-                  subtitle="Lista wszystkich złożonych rezerwacji"
+                  subtitle="Lista aktualnie wypożyczonych pojazdów"
                 />
               <Grid item xs={10}>
                 <CardItem name="Fiat Punto" comfort="3/5" />
               </Grid>
               <Grid item xs={2}>
-                <Grid>
-                  <Button> Anuluj </Button>
-                  <Button> Wypożycz </Button>
-                </Grid>
+                  <Button> Umów zwrot </Button>
               </Grid>
             </Grid>
           </Grid>
@@ -65,4 +62,4 @@ class Reservations extends Component {
   }
 }
 
-export default withStyles(styles)(Reservations);
+export default withStyles(styles)(Rentals);
