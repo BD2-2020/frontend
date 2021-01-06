@@ -8,6 +8,7 @@ import Signup from './components/Signup'
 import AddEmployee from './components/AddEmployee'
 import Rentals from './components/Rentals'
 import AddCar from './components/AddCar'
+import Cars from './components/Cars'
 import ScrollToTop from './components/ScrollTop'
 
 export default props => (
@@ -22,6 +23,7 @@ export default props => (
           <Route exact path='/add_employee' component={ AddEmployee } />
           <Route exact path='/rentals' component={ Rentals } />
           <Route exact path='/add_car' component={ AddCar } />
+          <Route exact path='/cars' component={ Cars } />
         </Switch>
       </ScrollToTop>
     </HashRouter>

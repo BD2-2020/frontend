@@ -113,6 +113,9 @@ class Topbar extends Component {
     if (this.props.currentPath === "/rentals") {
       return 3;
     }
+    if (this.props.currentPath === "/cars") {
+      return 7;
+    }
   };
 
   render() {

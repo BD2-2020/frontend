@@ -1,6 +1,6 @@
 const Menu = [
   {
-    label: "Home",
+    label: "Start",
     pathname: "/"
   },
   {
@@ -28,13 +28,13 @@ const Menu = [
     pathname: "/add_employee"
   },
   {
+    label: "Samochody",
+    pathname: "/cars"
+  },
+  {
     label: "Dodaj samochód",
     pathname: "/add_car"
   },
-  {
-    label: "Ustawienia",
-    pathname: "/cards"
-  }
 
 ];
 
