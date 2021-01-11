@@ -95,28 +95,6 @@ const styles = theme => ({
 });
 
 class Main extends Component {
-  state = {
-    learnMoredialog: false,
-    getStartedDialog: false
-  };
-
-  componentDidMount() {}
-
-  openDialog = event => {
-    this.setState({ learnMoredialog: true });
-  };
-
-  dialogClose = event => {
-    this.setState({ learnMoredialog: false });
-  };
-
-  openGetStartedDialog = event => {
-    this.setState({ getStartedDialog: true });
-  };
-
-  closeGetStartedDialog = event => {
-    this.setState({ getStartedDialog: false });
-  };
 
   render() {
     const { classes } = this.props;

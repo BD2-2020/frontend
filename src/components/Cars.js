@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import withStyles from "@material-ui/styles/withStyles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
-import CardItem from "./cards/CardItem";
 import Topbar from "./Topbar";
 import SectionHeader from "./typo/SectionHeader";
 import Button from "@material-ui/core/Button";
+import Car from "./cards/Car";
 
 const backgroundShape = require("../images/shape.svg");
 
@@ -26,7 +26,15 @@ const styles = theme => ({
   }
 });
 
-class Reservations extends Component {
+class Cars extends Component {
+  state = {
+    cars: [],
+  }
+
+  componentDidMount() {
+    getCars().then((res) => this.setState( {cars: res }));
+  }
+
   render() {
     const { classes } = this.props;
     const currentPath = this.props.location.pathname;
@@ -48,14 +56,39 @@ class Reservations extends Component {
                   title="Samochody"
                   subtitle="Lista wszystkich samochodów"
                 />
-                <Grid item xs={10}>
-                    <CardItem name="Fiat Punto" comfort="3/5" />
-                </Grid>
-                <Grid item xs={2}>
-                    <Grid>
-                        <Button> Wycofaj </Button>
-                    </Grid>
-                </Grid>
+                  <Grid>
+                    {this.state.cars.map((value) => {
+                      return (
+                        <div>
+                          <Grid container spacing={3}>
+                            <Grid item xs={10}>
+                              <Car 
+                                name={value.CAR_BRAND_ID + ' ' + value.CAR_MODEL_ID}
+                                VIN={value.ID}
+                                year={value.PRODUCTION_YEAR}
+                                plateNumber={value.NUMBER_PLATE}
+                              />
+                            </Grid>
+                            <Grid item xs={2}>
+                              <Button onClick={(event) => 
+                                removeCar(value.ID).then((res) => {
+                                  if (res === 'Success') {
+                                    const copy = this.state.cars;
+                                    const index = copy.indexOf(value);
+                                    copy.splice(index, 1);
+                                    this.setState( {cars: copy} );
+                                  }
+                                  alert(res);
+                                })
+                              }> 
+                                Wycofaj 
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        </div>
+                      );
+                    })}
+                  </Grid>
             </Grid>
           </Grid>
         </div>
@@ -64,4 +97,26 @@ class Reservations extends Component {
   }
 }
 
-export default withStyles(styles)(Reservations);
+async function getCars() {
+  const response = await fetch('/api/cars');
+  const json = await response.json();
+  const cars = json.message;
+  for (const car of cars) {
+    car.PRODUCTION_YEAR = new Date(car.PRODUCTION_YEAR).getFullYear();
+  } 
+  return cars;
+}
+
+async function removeCar(VIN) {
+  const response = await fetch('/api/remove_car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({'VIN': VIN}),
+  });
+  const text = await response.json();
+  return text.message;
+}
+
+export default withStyles(styles)(Cars);

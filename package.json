@@ -41,5 +41,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/material-sense"
-  }
+  },
+  "proxy": "http://localhost:5000/"
 }

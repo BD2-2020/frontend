@@ -8,10 +8,10 @@ import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
 //import Months from "./common/Months";
-import MenuItem from "@material-ui/core/MenuItem";
 import CardItem from "./cards/CardItem";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import AutoComplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
 
 import Topbar from "./Topbar";
 
@@ -110,14 +110,35 @@ const styles = theme => ({
   },
   formControl: {
     width: "100%"
-  }
+  },
+  option: {
+    fontSize: 15,
+    '& > span': {
+      marginRight: 10,
+      fontSize: 18,
+    },
+  },
 });
 
 //const monthRange = Months;
 
 class Reservation extends Component {
   state = {
+    classes: [],
+    cars: {
+      '': [],
+    },
+    class: {
+      ID: '',
+    },
   };
+
+  componentDidMount() {
+    getClasses().then((res) => {
+      this.setState({classes: res});
+      getAvailableCars(res).then((res) => this.setState({cars: res}));
+    });
+  }
 
   render() {
     const { classes } = this.props;
@@ -146,14 +167,6 @@ class Reservation extends Component {
                       Wybierz pojazd dla siebie z naszej bogatej kolekcji
                     </Typography>
                   </div>
-                  <div>
-                    <Button
-                      variant="outlined"
-                      className={classes.outlinedButtom}
-                    >
-                      Pomoc
-                    </Button>
-                  </div>
                 </div>
               </Grid>
               <Grid item xs={12}>
@@ -165,11 +178,32 @@ class Reservation extends Component {
                       variant="outlined"
                       className={classes.formControl}
                     >
-                      <Select
-                        value={"combi"}>
-                        <MenuItem value={"combi"}>Combi</MenuItem>
-                        <MenuItem value={"sedan"}>Sedan</MenuItem>
-                      </Select>
+                      <AutoComplete
+                        id="class"
+                        options={this.state.classes}
+                        classes={{
+                          option: classes.option,
+                        }}
+                        autoHighlight
+                        getOptionLabel={(option) => option.CLASS}
+                        renderOption={(option => (
+                          <React.Fragment>
+                            {option.CLASS}
+                          </React.Fragment>
+                        ))}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Wybierz klasę"
+                            variant="outlined"
+                            inputProps={{
+                              ...params.inputProps,
+                              autoComplete: 'new-password',
+                            }}
+                          />
+                        )}
+                        onChange={(event, value) => this.setState({class: value})}
+                      />
                     </FormControl>
                 </Paper>
               </Grid>
@@ -177,10 +211,9 @@ class Reservation extends Component {
                 <Typography variant="subtitle1" gutterBottom>
                       Dostępne pojazdy w wybranej kategorii
                 </Typography>
-                <CardItem name="Fiat Punto" comfort="3/5" />
-                <CardItem name="Skoda Fabia" comfort="3.5/5" />
-                <CardItem name="Renault Megan" comfort="3.5/5" />
-                <CardItem name="Volswagen Golf" comfort="4/5" />
+                {this.state.cars[this.state.class.ID].map((value) => {
+                  return <CardItem name={value.CAR_BRAND_ID + ' ' + value.CAR_MODEL_ID} comfort="5/5" />
+                })}
               </Grid>
               <Grid item xs={12} md={4}>
                 <Paper className={classes.paper}>
@@ -278,6 +311,34 @@ class Reservation extends Component {
       </React.Fragment>
     );
   }
+}
+
+async function getClasses() {
+  const response = await fetch('/api/classes');
+  const body = await response.json();
+  return body.message;
+}
+
+async function getAvailableCars(classes) {
+  const response = await fetch('/api/available_cars');
+  const body = await response.json();
+
+  let cars = {
+    '': [],
+  };
+  for (const carClass of classes) {
+    cars[carClass.ID] = [];
+  }
+
+  let uniqueModelNames = new Set();
+  for (const car of body.message) {
+    if (!uniqueModelNames.has(car.CAR_MODEL_ID)) {
+      cars[car.CAR_CLASS_ID].push(car);
+      uniqueModelNames.add(car.CAR_MODEL_ID);
+    }
+  }
+
+  return cars;
 }
 
 export default withRouter(withStyles(styles)(Reservation));

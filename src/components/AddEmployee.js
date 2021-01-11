@@ -10,10 +10,8 @@ import Avatar from '@material-ui/core/Avatar';
 import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Container from '@material-ui/core/Container';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import AutoComplete from '@material-ui/lab/Autocomplete';
 
 const backgroundShape = require("../images/shape.svg");
 
@@ -90,10 +88,37 @@ const styles = theme => ({
   },
   selectEmpty: {
     marginTop: theme.spacing(3)
-  }
+  },
+  option: {
+    fontSize: 15,
+    '& > span': {
+      marginRight: 10,
+      fontSize: 18,
+    },
+  },
 });
 
 class AddEmployee extends Component {
+  state = {
+    roles: [],
+
+    email: '',
+    password: '',
+    role: '',
+    firstName: '',
+    lastName: '',
+    PESEL: '',
+    salary: '',
+    accountNumber: '',
+    address1: '',
+    address2: '',
+    postalCode: '',
+    city: '',
+  }
+
+  componentDidMount() {
+    getRoles().then((res) => this.setState({roles: res}));
+  }
 
   render() {
     const { classes } = this.props;
@@ -136,6 +161,7 @@ class AddEmployee extends Component {
                           name="email"
                           autoComplete="email"
                           autoFocus
+                          onChange={(event) => this.setState({email: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -147,24 +173,43 @@ class AddEmployee extends Component {
                           type="password"
                           id="password"
                           autoComplete="current-password"
+                          onChange={(event) => this.setState({password: event.target.value})}
                         />
                         <FormControl className={classes.formControl}>
-                            <InputLabel id="role">Uprawnienia</InputLabel>
-                            <Select
-                                labelId="role"
-                                id="role-select"
-                                //onChange={handleChange}
-                            >
-                                <MenuItem value={"admin"}>Administrator</MenuItem>
-                                <MenuItem value={"employee"}>Pracownik</MenuItem>
-                            </Select>
-                            </FormControl>
+                          <AutoComplete
+                            id="roles"
+                            options={this.state.roles}
+                            classes={{
+                              option: classes.option,
+                            }}
+                            autoHighlight
+                            getOptionLabel={(option) => option.name}
+                            renderOption={(option => (
+                              <React.Fragment>
+                                {option.name}
+                              </React.Fragment>
+                            ))}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Wybierz rolę"
+                                variant="outlined"
+                                inputProps={{
+                                  ...params.inputProps,
+                                  autoComplete: 'new-password',
+                                }}
+                              />
+                            )}
+                            onChange={(event, value) => this.setState({role: value})}
+                          />
+                        </FormControl>
                         <TextField
                           variant="outlined"
                           margin="normal"
                           fullWidth
                           label="Imię"
                           name="first_name"
+                          onChange={(event) => this.setState({firstName: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -172,6 +217,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Nazwisko"
                           name="last_name"
+                          onChange={(event) => this.setState({lastName: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -179,6 +225,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="PESEL"
                           name="pesel"
+                          onChange={(event) => this.setState({PESEL: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -186,6 +233,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Pensja"
                           name="salary"
+                          onChange={(event) => this.setState({salary: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -193,6 +241,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Numer konta"
                           name="account_no"
+                          onChange={(event) => this.setState({accountNumber: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -200,6 +249,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Adres"
                           name="address1"
+                          onChange={(event) => this.setState({address1: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -207,6 +257,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Adres (kont.)"
                           name="address2"
+                          onChange={(event) => this.setState({address2: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -214,6 +265,7 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Kod pocztowy"
                           name="postal_code"
+                          onChange={(event) => this.setState({postalCode: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -221,13 +273,31 @@ class AddEmployee extends Component {
                           fullWidth
                           label="Miasto"
                           name="city"
+                          onChange={(event) => this.setState({city: event.target.value})}
                         />
                         <Button
-                          type="submit"
+                          type="button"
                           fullWidth
                           variant="contained"
                           color="primary"
                           className={classes.submit}
+                          onClick={(event) => {
+                            const employee = {
+                              email: this.state.email,
+                              password: this.state.password,
+                              role: this.state.role,
+                              firstName: this.state.firstName,
+                              lastName: this.state.lastName,
+                              PESEL: this.state.PESEL,
+                              salary: this.state.salary,
+                              accountNumber: this.state.accountNumber,
+                              address1: this.state.address1,
+                              address2: this.state.address2,
+                              postalCode: this.state.postalCode,
+                              city: this.state.city,
+                            };
+                            submit(employee).then((res) => alert(res));
+                          }}                                
                         >
                           Zarejestruj się
                         </Button>
@@ -242,6 +312,27 @@ class AddEmployee extends Component {
       </React.Fragment>
     );
   }
+}
+
+async function getRoles() {
+  const response = await fetch('/api/roles');
+  const body = await response.json();
+  return body.message;
+}
+
+async function submit(employee) {
+  if (employee.email === '' || employee.password === '' || employee.firstName === '' || employee.lastName === '' ||
+    employee.address1 === '' || employee.postalCode === '' || employee.city === '' || employee.salary === '' || employee.accountNumber === '')
+    return 'Missing info';
+  const response = await fetch('/api/add_employee', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(employee),
+  });
+  const text = await response.json();
+  return text.message;
 }
 
 export default withRouter(withStyles(styles)(AddEmployee));

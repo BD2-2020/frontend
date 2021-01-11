@@ -90,6 +90,18 @@ const styles = theme => ({
 });
 
 class Wizard extends Component {
+  state = {
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    PESEL: '',
+    licenseNumber: '',
+    address1: '',
+    address2: '',
+    postalCode: '',
+    city: '',
+  }
 
   render() {
     const { classes } = this.props;
@@ -132,6 +144,7 @@ class Wizard extends Component {
                           name="email"
                           autoComplete="email"
                           autoFocus
+                          onChange={(event) => this.setState({email: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -143,6 +156,7 @@ class Wizard extends Component {
                           type="password"
                           id="password"
                           autoComplete="current-password"
+                          onChange={(event) => this.setState({password: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -150,6 +164,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Imię"
                           name="first_name"
+                          onChange={(event) => this.setState({firstName: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -157,6 +172,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Nazwisko"
                           name="last_name"
+                          onChange={(event) => this.setState({lastName: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -164,6 +180,7 @@ class Wizard extends Component {
                           fullWidth
                           label="PESEL"
                           name="pesel"
+                          onChange={(event) => this.setState({PESEL: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -171,6 +188,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Numer prawa jazdy"
                           name="license_no"
+                          onChange={(event) => this.setState({licenseNumber: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -178,6 +196,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Adres"
                           name="address1"
+                          onChange={(event) => this.setState({address1: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -185,6 +204,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Adres (kont.)"
                           name="address2"
+                          onChange={(event) => this.setState({address2: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -192,6 +212,7 @@ class Wizard extends Component {
                           fullWidth
                           label="Kod pocztowy"
                           name="postal_code"
+                          onChange={(event) => this.setState({postalCode: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -199,13 +220,15 @@ class Wizard extends Component {
                           fullWidth
                           label="Miasto"
                           name="city"
+                          onChange={(event) => this.setState({city: event.target.value})}
                         />
                         <Button
-                          type="submit"
+                          type="button"
                           fullWidth
                           variant="contained"
                           color="primary"
                           className={classes.submit}
+                          onClick={(event) => submit(this.state).then((res) => alert(res))}
                         >
                           Zarejestruj się
                         </Button>
@@ -220,6 +243,21 @@ class Wizard extends Component {
       </React.Fragment>
     );
   }
+}
+
+async function submit(customer) {
+  if (customer.email === '' || customer.password === '' || customer.firstName === '' || customer.lastName === '' ||
+    customer.licenseNumber === '' || customer.address1 === '' || customer.postalCode === '' || customer.city === '')
+    return 'Missing info';
+  const response = await fetch('/api/add_customer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(customer),
+  });
+  const text = await response.json();
+  return text.message;
 }
 
 export default withRouter(withStyles(styles)(Wizard));
