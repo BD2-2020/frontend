@@ -161,22 +161,24 @@ class Topbar extends Component {
                       <AppBar title="Menu" />
                       <List>
                         {Menu.map((item, index) => (
-                          <ListItem
-                            component={item.external ? MaterialLink : Link}
-                            href={item.external ? item.pathname : null}
-                            to={
-                              item.external
-                                ? null
-                                : {
-                                    pathname: item.pathname,
-                                    search: this.props.location.search
-                                  }
-                            }
-                            button
-                            key={item.label}
-                          >
-                            <ListItemText primary={item.label} />
-                          </ListItem>
+                          <AccessLimit minLevel={item.min_level} maxLevel={item.max_level}>
+                            <ListItem
+                              component={item.external ? MaterialLink : Link}
+                              href={item.external ? item.pathname : null}
+                              to={
+                                item.external
+                                  ? null
+                                  : {
+                                      pathname: item.pathname,
+                                      search: this.props.location.search
+                                    }
+                              }
+                              button
+                              key={item.label}
+                            >
+                              <ListItemText primary={item.label} />
+                            </ListItem>
+                          </AccessLimit>
                         ))}
                       </List>
                     </SwipeableDrawer>

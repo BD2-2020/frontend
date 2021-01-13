@@ -11,6 +11,8 @@ import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Container from '@material-ui/core/Container';
 
+import UserSession from "./auth/UserSession"
+
 const backgroundShape = require("../images/shape.svg");
 
 const logo = require("../images/logo.svg");
@@ -122,7 +124,13 @@ class Signup extends Component {
             return Promise.reject(error);
         }
 
-        alert(response);
+        if(data.message == null) {
+          alert("invalid username/password");
+        } else {
+          UserSession.setEmail(data.message.email);
+          UserSession.setAccessLevel(data.message.type);
+          this.props.history.push("/");
+        }
     }).catch(error => {
         alert("Failed to send /api/login request!", error);
     });

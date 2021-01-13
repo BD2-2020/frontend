@@ -22,10 +22,12 @@ var UserSession = (function() {
 
     var setEmail = function(_email) {
         email = _email;
+        console.debug("Email changes to", email);
     };
 
     var setAccessLevel = function(_access_level) {
         access_level = strToAccessLevel(_access_level);
+        console.debug("Access level changed to", access_level);
     };
 
     return {
