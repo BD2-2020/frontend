@@ -1,3 +1,4 @@
+import 'date-fns'
 import React, { Component } from "react";
 import withStyles from "@material-ui/styles/withStyles";
 import { withRouter, Link } from "react-router-dom";
@@ -7,11 +8,15 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
-//import Months from "./common/Months";
 import CardItem from "./cards/CardItem";
 import FormControl from "@material-ui/core/FormControl";
 import AutoComplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 import Topbar from "./Topbar";
 
@@ -131,6 +136,9 @@ class Reservation extends Component {
     class: {
       ID: '',
     },
+    startDate: new Date(),
+    endDate: new Date(),
+    age: 18
   };
 
   componentDidMount() {
@@ -138,6 +146,18 @@ class Reservation extends Component {
       this.setState({classes: res});
       getAvailableCars(res).then((res) => this.setState({cars: res}));
     });
+  }
+
+  getEstimate() {   
+    if (this.state.class.ID !== '') {
+      const diffTime = Math.abs(this.state.endDate - this.state.startDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const classPrice = parseInt(this.state.class.PRICE.substr(1));
+      const ageMultiplier = Math.abs(50 - this.state.age) / 32 + 1;
+
+      return Math.ceil(diffDays * classPrice * ageMultiplier);
+    }
+    return 0;
   }
 
   render() {
@@ -219,19 +239,39 @@ class Reservation extends Component {
                 <Paper className={classes.paper}>
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
-                      Okresu wypożyczenia
+                      Okres wypożyczenia
                     </Typography>
-                    <Typography variant="body1">Od kiedy</Typography>
                     <div className={classes.blockCenter}>
-                      <Typography color="secondary" variant="h6" gutterBottom>
-                        24.12.2020 18.00
-                      </Typography>
-                    </div>
-                    <Typography variant="body1">Do kiedy</Typography>
-                    <div className={classes.blockCenter}>
-                      <Typography color="secondary" variant="h6" gutterBottom>
-                        31.12.2020 18.00
-                      </Typography>
+                      <Typography variant="body1">Od kiedy</Typography>
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="yyyy/MM/dd"
+                        margin="normal"
+                        id="date-picker-start"
+                        label="Wybierz datę rozpoczęcia"
+                        value={this.state.startDate}
+                        onChange={(date) => this.setState({startDate: date})}
+                        KeyboardButtonProps={{
+                          'aria-label': 'change date',
+                        }}
+                      />
+                      <Typography variant="body1">Do kiedy</Typography>
+                      <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="yyyy/MM/dd"
+                        margin="normal"
+                        id="date-picker-end"
+                        label="Wybierz datę zakończenia"
+                        value={this.state.endDate}
+                        onChange={(date) => this.setState({endDate: date})}
+                        KeyboardButtonProps={{
+                          'aria-label': 'change date',
+                        }}
+                      />
+                      </MuiPickersUtilsProvider>
                     </div>
                   </div>
                 </Paper>
@@ -247,15 +287,16 @@ class Reservation extends Component {
                     </Typography>
                     <div className={classes.blockCenter}>
                       <Typography color="secondary" variant="h6" gutterBottom>
-                        18 lat
+                        {this.state.age} lat
                       </Typography>
                     </div>
                     <div>
                       <Slider
-                        value={18}
+                        value={this.state.age}
                         min={18}
                         max={70}
                         step={1}
+                        onChange={(event, value) => this.setState({age: value})}
                       />
                     </div>
                     <div className={classes.rangeLabel}>
@@ -284,20 +325,16 @@ class Reservation extends Component {
                           color={"secondary"}
                           gutterBottom
                         >
-                          1855 - 3220 PLN
+                          {this.getEstimate()} PLN
                         </Typography>
                       </div>
-
-                      <Typography variant="subtitle1" gutterBottom>
-                        Okres ważności rezerwacji: <b>22.12.2020r.</b>
-                      </Typography>
                       <div className={classes.buttonBar}>
                         <Button
-                          to={{ pathname: "/dashboard", search: `?type=apply` }}
                           component={Link}
                           color="primary"
                           variant="contained"
                           className={classes.actionButtom}
+                          disabled={this.state.class.ID === ''}
                         >
                           Zarezerwuj
                         </Button>
