@@ -91,6 +91,43 @@ const styles = theme => ({
 
 class Signup extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {email: '', password: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    this.setState({[name]: value});
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.state)
+    };
+    fetch('/api/login', requestOptions).then(async response => {
+        const data = await response.json();
+
+        if (!response.ok) {
+            const error = (data && data.message) || response.status;
+            return Promise.reject(error);
+        }
+
+        alert(response);
+    }).catch(error => {
+        alert("Failed to send /api/login request!", error);
+    });
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -121,7 +158,7 @@ class Signup extends Component {
                       <Typography component="h1" variant="h5">
                         Zaloguj się
                       </Typography>
-                      <form className={classes.form} noValidate>
+                      <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
                         <TextField
                           variant="outlined"
                           margin="normal"
@@ -132,6 +169,7 @@ class Signup extends Component {
                           name="email"
                           autoComplete="email"
                           autoFocus
+                          onChange={this.handleChange}
                         />
                         <TextField
                           variant="outlined"
@@ -143,6 +181,7 @@ class Signup extends Component {
                           type="password"
                           id="password"
                           autoComplete="current-password"
+                          onChange={this.handleChange}
                         />
                         <Button
                           type="submit"
