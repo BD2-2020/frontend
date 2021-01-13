@@ -14,7 +14,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import { Link as MaterialLink } from "@material-ui/core";
+
 import Menu from "./Menu";
+import AccessLimit from "./auth/AccessLimit"
 
 const logo = require("../images/logo.svg");
 
@@ -185,21 +187,23 @@ class Topbar extends Component {
                       onChange={this.handleChange}
                     >
                       {Menu.map((item, index) => (
-                        <Tab
-                          key={index}
-                          component={item.external ? MaterialLink : Link}
-                          href={item.external ? item.pathname : null}
-                          to={
-                            item.external
-                              ? null
-                              : {
-                                  pathname: item.pathname,
-                                  search: this.props.location.search
-                                }
-                          }
-                          classes={{ root: classes.tabItem }}
-                          label={item.label}
-                        />
+                        <AccessLimit minLevel={item.min_level} maxLevel={item.max_level}>
+                          <Tab
+                            key={index}
+                            component={item.external ? MaterialLink : Link}
+                            href={item.external ? item.pathname : null}
+                            to={
+                              item.external
+                                ? null
+                                : {
+                                    pathname: item.pathname,
+                                    search: this.props.location.search
+                                  }
+                            }
+                            classes={{ root: classes.tabItem }}
+                            label={item.label}
+                          />
+                        </AccessLimit>
                       ))}
                     </Tabs>
                   </div>
