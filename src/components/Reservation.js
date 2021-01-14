@@ -144,8 +144,16 @@ class Reservation extends Component {
 
   componentDidMount() {
     getClasses().then((res) => {
-      this.setState({classes: res});
-      getAvailableCars(res).then((res) => this.setState({cars: res}));
+      let newCars = {
+        '': [],
+      }
+      for (const carClass of res) {
+        newCars[carClass.ID] = [];
+      }
+      this.setState({
+        classes: res,
+        cars: newCars
+      });
     });
   }
 
@@ -257,7 +265,10 @@ class Reservation extends Component {
                         id="date-picker-start"
                         label="Wybierz datę rozpoczęcia"
                         value={this.state.startDate}
-                        onChange={(date) => this.setState({startDate: date})}
+                        onChange={(date) => {
+                          getAvailableCars(this.state.classes, date, this.state.endDate).then((res) => this.setState({cars: res}));
+                          this.setState({startDate: date})
+                        }}
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
@@ -271,7 +282,10 @@ class Reservation extends Component {
                         id="date-picker-end"
                         label="Wybierz datę zakończenia"
                         value={this.state.endDate}
-                        onChange={(date) => this.setState({endDate: date})}
+                        onChange={(date) => {
+                          getAvailableCars(this.state.classes, this.state.startDate, date).then((res) => this.setState({cars: res}));
+                          this.setState({endDate: date});
+                        }}
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
@@ -364,14 +378,18 @@ class Reservation extends Component {
   }
 }
 
+function formatDate(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+}
+
 async function getClasses() {
   const response = await fetch('/api/classes');
   const body = await response.json();
   return body.message;
 }
 
-async function getAvailableCars(classes) {
-  const response = await fetch('/api/available_cars');
+async function getAvailableCars(classes, from, to) {
+  const response = await fetch('/api/available_cars/' + formatDate(from) + '/' + formatDate(to));
   const body = await response.json();
 
   let cars = {
