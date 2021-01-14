@@ -19,6 +19,7 @@ import {
 } from '@material-ui/pickers';
 
 import Topbar from "./Topbar";
+import UserSession from "./auth/UserSession"
 
 const numeral = require("numeral");
 numeral.defaultFormat("0,000");
@@ -158,6 +159,10 @@ class Reservation extends Component {
       return Math.ceil(diffDays * classPrice * ageMultiplier);
     }
     return 0;
+  }
+
+  formatDate(date) {
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
   }
 
   render() {
@@ -335,6 +340,15 @@ class Reservation extends Component {
                           variant="contained"
                           className={classes.actionButtom}
                           disabled={this.state.class.ID === ''}
+                          onClick={(event) => {
+                            reserve({
+                              startDate: this.formatDate(this.state.startDate),
+                              endDate: this.formatDate(this.state.endDate),
+                              price: this.getEstimate(),
+                              customerID: UserSession.getEmail(),
+                              carID: this.state.cars[this.state.class.ID][0].ID, //TODO
+                            }).then((res) => alert(res));
+                          }}
                         >
                           Zarezerwuj
                         </Button>
@@ -376,6 +390,18 @@ async function getAvailableCars(classes) {
   }
 
   return cars;
+}
+
+async function reserve(reservation) {
+  const response = await fetch('/api/add_reservation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reservation),
+  });
+  const message = await response.json();
+  return message.message;
 }
 
 export default withRouter(withStyles(styles)(Reservation));
