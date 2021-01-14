@@ -272,6 +272,7 @@ class Reservation extends Component {
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
+                        maxDate={this.state.endDate}
                       />
                       <Typography variant="body1">Do kiedy</Typography>
                       <KeyboardDatePicker
@@ -289,6 +290,7 @@ class Reservation extends Component {
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
+                        minDate={this.state.startDate}
                       />
                       </MuiPickersUtilsProvider>
                     </div>
@@ -353,14 +355,14 @@ class Reservation extends Component {
                           color="primary"
                           variant="contained"
                           className={classes.actionButtom}
-                          disabled={this.state.class.ID === ''}
+                          disabled={this.state.cars[this.state.class.ID].length === 0}
                           onClick={(event) => {
                             reserve({
                               startDate: this.formatDate(this.state.startDate),
                               endDate: this.formatDate(this.state.endDate),
                               price: this.getEstimate(),
                               customerID: UserSession.getEmail(),
-                              carID: this.state.cars[this.state.class.ID][0].ID, //TODO
+                              carID: this.state.cars[this.state.class.ID][0].ID
                             }).then((res) => alert(res));
                           }}
                         >
