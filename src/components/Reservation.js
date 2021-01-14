@@ -19,6 +19,7 @@ import {
 } from '@material-ui/pickers';
 
 import Topbar from "./Topbar";
+import UserSession from "./auth/UserSession"
 
 const numeral = require("numeral");
 numeral.defaultFormat("0,000");
@@ -143,8 +144,16 @@ class Reservation extends Component {
 
   componentDidMount() {
     getClasses().then((res) => {
-      this.setState({classes: res});
-      getAvailableCars(res).then((res) => this.setState({cars: res}));
+      let newCars = {
+        '': [],
+      }
+      for (const carClass of res) {
+        newCars[carClass.ID] = [];
+      }
+      this.setState({
+        classes: res,
+        cars: newCars
+      });
     });
   }
 
@@ -158,6 +167,10 @@ class Reservation extends Component {
       return Math.ceil(diffDays * classPrice * ageMultiplier);
     }
     return 0;
+  }
+
+  formatDate(date) {
+    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
   }
 
   render() {
@@ -252,7 +265,10 @@ class Reservation extends Component {
                         id="date-picker-start"
                         label="Wybierz datę rozpoczęcia"
                         value={this.state.startDate}
-                        onChange={(date) => this.setState({startDate: date})}
+                        onChange={(date) => {
+                          getAvailableCars(this.state.classes, date, this.state.endDate).then((res) => this.setState({cars: res}));
+                          this.setState({startDate: date})
+                        }}
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
@@ -266,7 +282,10 @@ class Reservation extends Component {
                         id="date-picker-end"
                         label="Wybierz datę zakończenia"
                         value={this.state.endDate}
-                        onChange={(date) => this.setState({endDate: date})}
+                        onChange={(date) => {
+                          getAvailableCars(this.state.classes, this.state.startDate, date).then((res) => this.setState({cars: res}));
+                          this.setState({endDate: date});
+                        }}
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
                         }}
@@ -335,6 +354,15 @@ class Reservation extends Component {
                           variant="contained"
                           className={classes.actionButtom}
                           disabled={this.state.class.ID === ''}
+                          onClick={(event) => {
+                            reserve({
+                              startDate: this.formatDate(this.state.startDate),
+                              endDate: this.formatDate(this.state.endDate),
+                              price: this.getEstimate(),
+                              customerID: UserSession.getEmail(),
+                              carID: this.state.cars[this.state.class.ID][0].ID, //TODO
+                            }).then((res) => alert(res));
+                          }}
                         >
                           Zarezerwuj
                         </Button>
@@ -350,14 +378,18 @@ class Reservation extends Component {
   }
 }
 
+function formatDate(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+}
+
 async function getClasses() {
   const response = await fetch('/api/classes');
   const body = await response.json();
   return body.message;
 }
 
-async function getAvailableCars(classes) {
-  const response = await fetch('/api/available_cars');
+async function getAvailableCars(classes, from, to) {
+  const response = await fetch('/api/available_cars/' + formatDate(from) + '/' + formatDate(to));
   const body = await response.json();
 
   let cars = {
@@ -376,6 +408,18 @@ async function getAvailableCars(classes) {
   }
 
   return cars;
+}
+
+async function reserve(reservation) {
+  const response = await fetch('/api/add_reservation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reservation),
+  });
+  const message = await response.json();
+  return message.message;
 }
 
 export default withRouter(withStyles(styles)(Reservation));
