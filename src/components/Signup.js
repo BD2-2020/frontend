@@ -25,7 +25,7 @@ const styles = theme => ({
     overflow: "hidden",
     background: `url(${backgroundShape}) no-repeat`,
     backgroundSize: "cover",
-    backgroundPosition: "0 400px",
+    backgroundPosition: "0 1000px",
     marginTop: 10,
     padding: 20,
     paddingBottom: 500
@@ -85,11 +85,23 @@ const styles = theme => ({
     width: "100%"
   },
   selectEmpty: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(3)
   }
 });
 
-class Signup extends Component {
+class Wizard extends Component {
+  state = {
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    PESEL: '',
+    licenseNumber: '',
+    address1: '',
+    address2: '',
+    postalCode: '',
+    city: '',
+  }
 
   render() {
     const { classes } = this.props;
@@ -119,7 +131,7 @@ class Signup extends Component {
                         <LockOutlinedIcon />
                       </Avatar>
                       <Typography component="h1" variant="h5">
-                        Zaloguj się
+                        Zarejestruj się
                       </Typography>
                       <form className={classes.form} noValidate>
                         <TextField
@@ -132,6 +144,7 @@ class Signup extends Component {
                           name="email"
                           autoComplete="email"
                           autoFocus
+                          onChange={(event) => this.setState({email: event.target.value})}
                         />
                         <TextField
                           variant="outlined"
@@ -143,15 +156,81 @@ class Signup extends Component {
                           type="password"
                           id="password"
                           autoComplete="current-password"
+                          onChange={(event) => this.setState({password: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Imię"
+                          name="first_name"
+                          onChange={(event) => this.setState({firstName: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Nazwisko"
+                          name="last_name"
+                          onChange={(event) => this.setState({lastName: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="PESEL"
+                          name="pesel"
+                          onChange={(event) => this.setState({PESEL: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Numer prawa jazdy"
+                          name="license_no"
+                          onChange={(event) => this.setState({licenseNumber: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Adres"
+                          name="address1"
+                          onChange={(event) => this.setState({address1: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Adres (kont.)"
+                          name="address2"
+                          onChange={(event) => this.setState({address2: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Kod pocztowy"
+                          name="postal_code"
+                          onChange={(event) => this.setState({postalCode: event.target.value})}
+                        />
+                        <TextField
+                          variant="outlined"
+                          margin="normal"
+                          fullWidth
+                          label="Miasto"
+                          name="city"
+                          onChange={(event) => this.setState({city: event.target.value})}
                         />
                         <Button
-                          type="submit"
+                          type="button"
                           fullWidth
                           variant="contained"
                           color="primary"
                           className={classes.submit}
+                          onClick={(event) => submit(this.state).then((res) => alert(res))}
                         >
-                          Zaloguj się
+                          Zarejestruj się
                         </Button>
                       </form>
                     </div>
@@ -166,4 +245,19 @@ class Signup extends Component {
   }
 }
 
-export default withRouter(withStyles(styles)(Signup));
+async function submit(customer) {
+  if (customer.email === '' || customer.password === '' || customer.firstName === '' || customer.lastName === '' ||
+    customer.licenseNumber === '' || customer.address1 === '' || customer.postalCode === '' || customer.city === '')
+    return 'Missing info';
+  const response = await fetch('/api/add_customer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(customer),
+  });
+  const text = await response.json();
+  return text.message;
+}
+
+export default withRouter(withStyles(styles)(Wizard));
