@@ -78,7 +78,7 @@ class Cars extends Component {
                                     copy.splice(index, 1);
                                     this.setState( {cars: copy} );
                                   }
-                                  alert(res);
+                                  alert('Wycofano.');
                                 })
                               }> 
                                 Wycofaj 
