@@ -228,7 +228,12 @@ class Wizard extends Component {
                           variant="contained"
                           color="primary"
                           className={classes.submit}
-                          onClick={(event) => submit(this.state).then((res) => alert(res))}
+                          onClick={(event) => submit(this.state).then((res) => {
+                            var message = res === 'Success' ? 'Konto założone.' : 'E-mail już zarejestrowany.';
+                            if (res === 'Missing info')
+                              message = 'Wypełnij wszystkie pola.'
+                            alert(message);
+                          })}
                         >
                           Zarejestruj się
                         </Button>

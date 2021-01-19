@@ -118,7 +118,7 @@ class Rentals extends Component {
                                 onClick={(event) => endRental({
                                   endDate: this.state.endDates[index],
                                   ID: value.ID,
-                                }).then((res) => alert(res))}
+                                }).then((res) => alert('Data oddania zmieniona.'))}
                               > 
                                 Umów zwrot 
                               </Button>

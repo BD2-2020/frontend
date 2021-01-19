@@ -226,7 +226,10 @@ class AddCar extends Component {
                             VIN: this.state.VIN,
                             year: this.state.year,
                             numberPlate: this.state.numberPlate,
-                          }).then((res) => alert(res))}
+                          }).then((res) => {
+                            const message = res === 'Success' ? 'Dodano.' : 'Wypełnij wszystkie pola.';
+                            alert(message);
+                          })}
                           >
                           Dodaj
                         </Button>

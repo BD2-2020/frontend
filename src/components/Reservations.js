@@ -37,7 +37,7 @@ const styles = theme => ({
 class Reservations extends Component {
   state = {
     reservations: [],
-    rentalStartDates: [],
+    // rentalStartDates: [],
   }
 
   componentDidMount() {
@@ -97,11 +97,15 @@ class Reservations extends Component {
                       <Grid item xs={3}>
                         <Grid container direction='column'>
                           <Button
-                            onClick={(event) => cancelReservation(value.ID).then((res) => alert(res))}
+                            onClick={(event) => cancelReservation(value.ID).then((res) => {
+                              let copy = this.state.reservations;
+                              copy.splice(index, 1);
+                              this.setState({reservations: copy});
+                            })}
                           > 
                             Anuluj 
                           </Button>
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                          {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                               disableToolbar
                               variant="inline"
@@ -119,13 +123,20 @@ class Reservations extends Component {
                                 'aria-label': 'change date',
                               }}
                               minDate={value.START_DATE}
+                              maxDate={new Date()}
                             />
-                          </MuiPickersUtilsProvider>
+                          </MuiPickersUtilsProvider> */}
                           <Button
                             onClick={(event) => rent({
                               ID: value.ID,
-                              startDate: this.formatDate(this.state.rentalStartDates[index]),
-                            }).then((res) => alert(res))}
+                              startDate: new Date(),
+                            }).then((res) => {
+                              let copy = this.state.reservations;
+                              copy.splice(index, 1);
+                              this.setState({reservations: copy});
+                              alert('Wypożyczenie dodane.');
+                            })}
+                            disabled={new Date(value.START_DATE).getDate() > new Date().getDate()}
                           > 
                             Wypożycz 
                           </Button>

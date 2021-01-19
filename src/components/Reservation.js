@@ -160,7 +160,7 @@ class Reservation extends Component {
   getEstimate() {   
     if (this.state.class.ID !== '') {
       const diffTime = Math.abs(this.state.endDate - this.state.startDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
       const classPrice = parseInt(this.state.class.PRICE.substr(1));
       const ageMultiplier = Math.abs(50 - this.state.age) / 32 + 1;
 
@@ -235,7 +235,13 @@ class Reservation extends Component {
                             }}
                           />
                         )}
-                        onChange={(event, value) => this.setState({class: value})}
+                        onChange={(event, value) => {
+                          getAvailableCars(this.state.classes, this.state.startDate, this.state.endDate).then((res) => {
+                            this.setState({
+                              cars: res,
+                              class: value
+                            })})
+                          }}
                       />
                     </FormControl>
                 </Paper>
@@ -267,12 +273,15 @@ class Reservation extends Component {
                         value={this.state.startDate}
                         onChange={(date) => {
                           getAvailableCars(this.state.classes, date, this.state.endDate).then((res) => this.setState({cars: res}));
-                          this.setState({startDate: date})
+                          const newEndDate = this.state.endDate < date ? date : this.state.endDate;
+                          this.setState({
+                            startDate: date,
+                            endDate: newEndDate});
                         }}
                         KeyboardButtonProps={{
                           'aria-label': 'change date',
-                        }}
-                        maxDate={this.state.endDate}
+                        }}                        
+                        minDate={new Date()}
                       />
                       <Typography variant="body1">Do kiedy</Typography>
                       <KeyboardDatePicker
@@ -363,7 +372,7 @@ class Reservation extends Component {
                               price: this.getEstimate(),
                               customerID: UserSession.getEmail(),
                               carID: this.state.cars[this.state.class.ID][0].ID
-                            }).then((res) => alert(res));
+                            }).then((res) => alert('Rezerwacja dodana.'));
                           }}
                         >
                           Zarezerwuj

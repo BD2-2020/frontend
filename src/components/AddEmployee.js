@@ -296,7 +296,12 @@ class AddEmployee extends Component {
                               postalCode: this.state.postalCode,
                               city: this.state.city,
                             };
-                            submit(employee).then((res) => alert(res));
+                            submit(employee).then((res) => {
+                              var message = res === 'Success' ? 'Konto założone.' : 'E-mail już zarejestrowany.';
+                              if (res === 'Missing info')
+                                message = 'Wypełnij wszystkie pola.'
+                              alert(message);
+                            });
                           }}                                
                         >
                           Zarejestruj się
