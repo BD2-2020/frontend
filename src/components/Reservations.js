@@ -7,11 +7,6 @@ import ReservationCard from "./cards/ReservationCard";
 import Topbar from "./Topbar";
 import SectionHeader from "./typo/SectionHeader";
 import Button from "@material-ui/core/Button";
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
 
 import UserSession from './auth/UserSession'
 
@@ -37,7 +32,6 @@ const styles = theme => ({
 class Reservations extends Component {
   state = {
     reservations: [],
-    // rentalStartDates: [],
   }
 
   componentDidMount() {
@@ -105,27 +99,6 @@ class Reservations extends Component {
                           > 
                             Anuluj 
                           </Button>
-                          {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                              disableToolbar
-                              variant="inline"
-                              format="yyyy/MM/dd"
-                              margin="normal"
-                              id="date-picker-start"
-                              label="Wybierz datę rozpoczęcia"
-                              value={this.state.rentalStartDates[index]}
-                              onChange={(date) => {
-                                var copy = this.state.rentalStartDates.splice();
-                                copy[index] = date;
-                                this.setState({rentalStartDates: copy});
-                              }}
-                              KeyboardButtonProps={{
-                                'aria-label': 'change date',
-                              }}
-                              minDate={value.START_DATE}
-                              maxDate={new Date()}
-                            />
-                          </MuiPickersUtilsProvider> */}
                           <Button
                             onClick={(event) => rent({
                               ID: value.ID,
@@ -136,7 +109,7 @@ class Reservations extends Component {
                               this.setState({reservations: copy});
                               alert('Wypożyczenie dodane.');
                             })}
-                            disabled={new Date(value.START_DATE).getDate() > new Date().getDate()}
+                            disabled={new Date(value.START_DATE).getTime() > new Date().getTime()}
                           > 
                             Wypożycz 
                           </Button>
